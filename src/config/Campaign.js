@@ -122,7 +122,8 @@ export const leadCampaigns = [
   "JC | MORTGAGE CALCULATOR | BUYERS",
   "Google Ads",
   "Google Local Services",
-  "JC | Listas de Propiedades | BUYERS | 0518 - Copy"
+  "JC | Listas de Propiedades | BUYERS | 0518 - Copy",
+  "VM - Buyer Video 2 | Lead Generation | 0518 - Copy"
 ];
 
 
