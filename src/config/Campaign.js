@@ -123,7 +123,8 @@ export const leadCampaigns = [
   "Google Ads",
   "Google Local Services",
   "JC | Listas de Propiedades | BUYERS | 0518 - Copy",
-  "VM - Buyer Video 2 | Lead Generation | 0518 - Copy"
+  "VM - Buyer Video 2 | Lead Generation | 0518 - Copy",
+  "Luis Galindo + Juan Carlos | Listas de Propiedades | BUYERS"
 ];
 
 

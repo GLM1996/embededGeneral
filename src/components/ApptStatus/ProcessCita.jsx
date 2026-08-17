@@ -989,8 +989,7 @@ export default function ProcessCita({
           "No";
       }
       delete formDataAccordion2.textValue;
-      dataJson = { ...dataJson, ...formDataAccordion2 };
-      console.log(dataJson);
+      dataJson = { ...dataJson, ...formDataAccordion2 };     
     }
 
     // Actualizar stage en FUB
@@ -1027,7 +1026,7 @@ export default function ProcessCita({
       type: "Follow Up",
       dueDateTime: fechaAjustada,
     };
-
+    console.log(dataTask)
     const put_stage = await postTask(dataTask);
     if (put_stage.success) {
       toast.success("Task Creada actualizada", {

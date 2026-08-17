@@ -739,6 +739,7 @@ export default function NewAppontment({ data, lastAppt, appointmentMongo }) {
                 const found = realtorsFilteredBK.find(item =>
                   item && item.includes(nombreApellido)
                 );
+                
                 return found ? found : nombreApellido + ' (Realtor)';
               }
             });
@@ -964,7 +965,7 @@ export default function NewAppontment({ data, lastAppt, appointmentMongo }) {
           console.log(error)
         }
       }
-
+ 
       try {
         const url = leadType !== "Personal Rent" ? `${servidor_n8n}/webhook/9f727616-ded2-4a94-a9dc-7ddb21eb5fe8` : `${servidor_n8n}/webhook/47c754ee-e28f-4206-92ce-348fe0ccd35d`
         const options = {
@@ -1333,7 +1334,7 @@ export default function NewAppontment({ data, lastAppt, appointmentMongo }) {
       }
 
       realtorsFiltered = realtorsFiltered.map((item) => item[1]);
-   
+      console.log(realtorsFiltered)
       setRealtorsFilteredBackup(realtorsFiltered)
     } catch (error) {
       console.log(error);
