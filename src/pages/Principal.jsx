@@ -1,126 +1,144 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from '../components/Navbar';
-import Summary from '../components/Summary';
-import { getCaptacionPeopleMongo, obtainHomes, putStage } from '../config/funciones';
-import { formatearFecha } from '../config/utils';
-import Loading from '../components/Loading';
+import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import Summary from "../components/Summary";
+import {
+  getCaptacionPeopleMongo,
+  obtainHomes,
+  putStage,
+} from "../config/funciones";
+import { formatearFecha } from "../config/utils";
+import Loading from "../components/Loading";
 import { toast } from "react-toastify";
-import NewAppontment from '../components/Appt/NewAppontment';
-import ListarAppt from '../components/Appt/ListarAppt';
-import DatosCliente from '../components/ApptStatus/DatosCliente';
-import Captacion from '../components/DataEntry/Captacion';
-import { useAppContext } from '../context/AppContext';
-import Splits from '../components/Splits';
-import Tasks from '../components/Tasks/ListTask';
-import PrincipalFollow from '../components/Follow/PrincipalFollow';
-import Form_Reasign from '../components/Reasign/Form_Reasign';
-import FormPastClient from '../components/PastClient/FormPastClient';
-import VaAsign from '../components/VaAsign/VaAsign';
+import NewAppontment from "../components/Appt/NewAppontment";
+import ListarAppt from "../components/Appt/ListarAppt";
+import DatosCliente from "../components/ApptStatus/DatosCliente";
+import Captacion from "../components/DataEntry/Captacion";
+import { useAppContext } from "../context/AppContext";
+import Splits from "../components/Splits";
+import Tasks from "../components/Tasks/ListTask";
+import PrincipalFollow from "../components/Follow/PrincipalFollow";
+import Form_Reasign from "../components/Reasign/Form_Reasign";
+import FormPastClient from "../components/PastClient/FormPastClient";
+import VaAsign from "../components/VaAsign/VaAsign";
+import RealtorR from "../components/RealtorReclutment/RealtorR";
 
 export default function Principal() {
-
   const { person, context, isLoading, isDuplicated, error } = useAppContext();
-  const [show, setShow] = useState('Summary');
-  const [loading, setLoading] = useState(false)
-  const [personFilter, setPersonFilter] = useState()
-  const [appt, setAppt] = useState([])
-  const [allowDuplicated, setAllowDuplicated] = useState(false)
+  const [show, setShow] = useState("Summary");
+  const [loading, setLoading] = useState(false);
+  const [personFilter, setPersonFilter] = useState();
+  const [appt, setAppt] = useState([]);
+  const [allowDuplicated, setAllowDuplicated] = useState(false);
 
-  console.log(context)
+  console.log(context);
 
   const getApptFub = (valor) => {
-    setAppt(valor)
-  }
+    setAppt(valor);
+  };
 
   useEffect(() => {
     if (context?.person?.id) {
       const fetchData = async () => {
-        setLoading(true)
+        setLoading(true);
         try {
-          let result = {}
+          let result = {};
           //const response = await getCaptacionPeopleMongo(context.person.id);
           const [response, responseDebt] = await Promise.all([
             getCaptacionPeopleMongo(context.person.id),
-            obtainHomes(context.person.id)
+            obtainHomes(context.person.id),
           ]);
           if (response.success) {
-            result = response.data
+            result = response.data;
           }
           if (responseDebt.success) {
-            result.dataDebs = responseDebt.data
-          }         
-          setPersonFilter(result)
+            result.dataDebs = responseDebt.data;
+          }
+          setPersonFilter(result);
         } catch (error) {
-          console.log(error)
+          console.log(error);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
-      }
-      fetchData()
+      };
+      fetchData();
     }
-  }, [context?.person?.id])
+  }, [context?.person?.id]);
 
   const changeShow = (value) => {
-    setShow(value)
-  }
+    setShow(value);
+  };
 
   const renderView = () => {
     switch (show) {
-      case 'Summary':
-        return <Summary personFilter={personFilter} getApptFub={getApptFub} key={1} />;// En tu componente principal:       
-      case 'Add Appt':
+      case "Summary":
+        return (
+          <Summary
+            personFilter={personFilter}
+            getApptFub={getApptFub}
+            key={1}
+          />
+        ); // En tu componente principal:
+      case "Add Appt":
         return <NewAppontment context={context} data="Data" />;
-      case 'Listar Appt':
+      case "Listar Appt":
         return <ListarAppt context={context} />;
-      case 'Captacion':
-        return <Captacion context={context} personFilter={personFilter} person={person} apptFub={appt} />;
-      case 'Data Cliente':
+      case "Captacion":
+        return (
+          <Captacion
+            context={context}
+            personFilter={personFilter}
+            person={person}
+            apptFub={appt}
+          />
+        );
+      case "Data Cliente":
         return <DatosCliente personFilter={personFilter} />;
-      case 'SPLITS':
+      case "SPLITS":
         return <Splits personFilter={personFilter} />;
-      case 'TASKS':
+      case "TASKS":
         return <Tasks />;
-      case 'FOLLOW':
+      case "FOLLOW":
         return <PrincipalFollow personFilter={personFilter} />;
-      case 'REASIGN':
+      case "REASIGN":
         return <Form_Reasign />;
-      case 'PAST CLIENT':
+      case "PAST CLIENT":
         return <FormPastClient />;
-      case 'VA ASIGN':
-        return <VaAsign />;      
+      case "VA ASIGN":
+        return <VaAsign />;
+      case "REALTORR":
+        return <RealtorR />;
       default:
         return <div>Default View</div>;
     }
   };
 
   const updatePeople = async () => {
-    setAllowDuplicated(!allowDuplicated)
+    setAllowDuplicated(!allowDuplicated);
     try {
       const dataJson = {
         personId: context.person.id,
-        customAllowDuplicated: !allowDuplicated
+        customAllowDuplicated: !allowDuplicated,
       };
 
       const put_stage = await putStage(dataJson);
       if (put_stage.success) {
         toast.success("People actualizada");
       }
-      window.location.reload()
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   if (isLoading) {
     return (
-      <div className='d-flex justify-content-center align-items-center w-100'>
+      <div className="d-flex justify-content-center align-items-center w-100">
         <Loading text="Loading Context and Client" />
       </div>
-    )
+    );
   }
 
   if (isDuplicated.length > 0 && !person?.customAllowDuplicated) {
-
     return (
       <div className="d-flex justify-content-start align-items-start flex-column w-100 p-4 bg-warning ">
         <h4 className="texto-animate bg-danger p-1 ">
@@ -156,12 +174,15 @@ export default function Principal() {
           </table>
         </div>
         {context?.user?.role === "Broker" && (
-          <div className='d-flex justify-content-center w-100'>
+          <div className="d-flex justify-content-center w-100">
             <div className="form-check">
-              <input className="form-check-input" type="checkbox" value={allowDuplicated} onChange={updatePeople} />
-              <label>
-                Permitir Duplicado
-              </label>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value={allowDuplicated}
+                onChange={updatePeople}
+              />
+              <label>Permitir Duplicado</label>
             </div>
           </div>
         )}
@@ -171,20 +192,24 @@ export default function Principal() {
 
   if (error) {
     return (
-      <div className='d-flex justify-content-center align-items-center w-100'>
-        <b className='bg-danger p-4 m-2 rounded-1 text-white text-uppercase'>{error.message}</b>
+      <div className="d-flex justify-content-center align-items-center w-100">
+        <b className="bg-danger p-4 m-2 rounded-1 text-white text-uppercase">
+          {error.message}
+        </b>
       </div>
-    )
+    );
   }
-  
+
   return (
     <>
       <Navbar changeMenu={changeShow} personFilter={person} />
       {loading ? (
-        <div className='d-flex justify-align-content-center align-items-center w-100'>
+        <div className="d-flex justify-align-content-center align-items-center w-100">
           <Loading text="Loading Context" />
         </div>
-      ) : (renderView())}
+      ) : (
+        renderView()
+      )}
     </>
   );
 }

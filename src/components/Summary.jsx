@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import {
   obtainHomes,
   getCaptacionPeopleMongo,
-  searchAppointmentFUB, getDealTransaction, putStage,
+  searchAppointmentFUB,
+  getDealTransaction,
+  putStage,
   putTask,
   searchAppointmentMongoDb,
   getAppointmentMongo,
@@ -11,30 +13,27 @@ import {
   ajustarFechaUtcModify,
   formatearFecha,
   formatearFechaSplit,
-  formatUsd
+  formatUsd,
 } from "../config/utils";
 import { toast } from "react-toastify";
 import CardDeals from "./CardDeals";
 import Loading from "./Loading";
 import FilasSummary from "./FilasSummary";
 import ListarCitas from "./ListarCitas";
-import { useAppContext } from '../context/AppContext';
-import ProgressBar from "../components/Follow/ProgressBar"
+import { useAppContext } from "../context/AppContext";
+import ProgressBar from "../components/Follow/ProgressBar";
 
 //Componente reutilizable
 function SummaryCard({ title, children, variant = "default" }) {
   return (
     <section className={`summary-card summary-card--${variant}`}>
       {title && <h6 className="summary-card__title">{title}</h6>}
-      <div className="summary-card__body">
-        {children}
-      </div>
+      <div className="summary-card__body">{children}</div>
     </section>
   );
 }
 
 export default function Summary({ personFilter, getApptFub, getLastCita }) {
-
   const [loading, setLoading] = useState(true);
   const [filterPerson, setFilterPerson] = useState();
   const [apptFub, setApptFub] = useState([]);
@@ -44,12 +43,12 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
   const [dataDebt, setDataDebt] = useState();
   const { person, context, isLoading, error } = useAppContext();
   const [deals, setDeals] = useState(null);
-  const [dataDebsReady, setDataDebsReady] = useState(false)
-  const [lastApptMongo, setLastApptMongo] = useState(null)
+  const [dataDebsReady, setDataDebsReady] = useState(false);
+  const [lastApptMongo, setLastApptMongo] = useState(null);
 
   //Estados Btn de los Task
-  const [btnTaskCall, setBtnTaskCall] = useState(false)
-  const [btnThankYouCall, setBtnThankYouCall] = useState(false)
+  const [btnTaskCall, setBtnTaskCall] = useState(false);
+  const [btnThankYouCall, setBtnThankYouCall] = useState(false);
 
   const resetApp = () => {
     setKey((prevKey) => prevKey + 1); // Cambiar la key fuerza un remount
@@ -67,7 +66,9 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
           if (appointments?.success) {
             setApptFub(appointments.data);
             if (appointments.data.length > 0) {
-              const apptMongo = await getAppointmentMongo(appointments.data[0]?.id);
+              const apptMongo = await getAppointmentMongo(
+                appointments.data[0]?.id,
+              );
 
               if (apptMongo) {
                 setLastApptMongo(apptMongo);
@@ -75,7 +76,7 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
             }
           }
 
-          getApptFub(appointments.data || [])
+          getApptFub(appointments.data || []);
 
           const dataDb = await obtainHomes(Number(context.person.id));
 
@@ -86,7 +87,7 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
           console.log(err);
         } finally {
           setLoading(false);
-          setDataDebsReady(true)
+          setDataDebsReady(true);
         }
       };
       fetchAppointmentData();
@@ -96,11 +97,10 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
   useEffect(() => {
     if (personFilter && apptFub.length > 0) {
       setFilterPerson(personFilter);
-      console.log(personFilter)
+      console.log(personFilter);
       if (personFilter?.citas?.length > 0) {
-
         const existCitaAppt = personFilter.citas.find(
-          (item) => (item.appointmentId === apptFub[0].id)
+          (item) => item.appointmentId === apptFub[0].id,
         );
 
         if (existCitaAppt) {
@@ -122,7 +122,7 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
         return value === "DECIDED TO QUIT"
           ? "⛔ "
           : value === "APPT DIDN´T GO" ||
-            value === "APPT DIDN´T APPROVE//DIDN´T SIGN"
+              value === "APPT DIDN´T APPROVE//DIDN´T SIGN"
             ? "🔔 "
             : "✅ ";
       case "Other Problem":
@@ -131,8 +131,8 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
         return value === "1 DAY ATTEMPT" || value === "2 DAY ATTEMPT"
           ? "✅ "
           : value === "3 DAY ATTEMPT" ||
-            value === "4 DAY ATTEMPT" ||
-            value === "5 DAY ATTEMPT"
+              value === "4 DAY ATTEMPT" ||
+              value === "5 DAY ATTEMPT"
             ? "🔔 "
             : "⛔ ";
       case "Contact Future":
@@ -178,12 +178,14 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
         const deal = await getDealTransaction(person.id);
 
         if (deal.success) {
-          const first = deal.data.filter((item) => item.pipelineName.includes('TRANSACTION'));
+          const first = deal.data.filter((item) =>
+            item.pipelineName.includes("TRANSACTION"),
+          );
 
           setDeals(first);
         }
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     };
 
@@ -228,19 +230,18 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
   }
 
   const handleDelete = async (clave, id) => {
-    if (!clave || !id)
-      return;
+    if (!clave || !id) return;
     if (clave === "customVANextContactDay3M") {
-      setBtnTaskCall(true)
+      setBtnTaskCall(true);
     }
     if (clave === "customVAPromiseToCallOrApptReminder") {
-      setBtnThankYouCall(true)
+      setBtnThankYouCall(true);
     }
     try {
       const data = {
         personId: person.id,
-        [clave]: null
-      }
+        [clave]: null,
+      };
       const put_stage = await putStage(data);
       if (put_stage.success) {
         toast.success("People actualizada", {
@@ -250,8 +251,8 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
       }
       const dataTask = {
         taskId: id,
-        isCompleted: true
-      }
+        isCompleted: true,
+      };
       const put_Task = await putTask(dataTask);
       if (put_Task.success) {
         toast.success("Task actualizada", {
@@ -261,33 +262,32 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
       }
       setTimeout(() => {
         window.location.reload();
-      }, 2000); // 3000 ms = 3 segundos      
-
+      }, 2000); // 3000 ms = 3 segundos
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.error("Ocurrió un error al actualizar", {
         position: "top-right",
         autoClose: 2000,
       });
     }
-  }
+  };
 
   function processPastClient() {
     if (!deals?.length) return null;
     if (!person?.tags?.includes("PAST CLIENT")) return null;
 
     const filterDeals = deals.filter((item) =>
-      item?.stageName?.toLowerCase().includes("closed")
+      item?.stageName?.toLowerCase().includes("closed"),
     );
 
     if (!filterDeals.length) return null;
 
     const buyerClosed = filterDeals.filter((item) =>
-      item?.stageName?.toLowerCase().includes("buyer closed")
+      item?.stageName?.toLowerCase().includes("buyer closed"),
     );
 
     const sellerClosed = filterDeals.filter((item) =>
-      item?.stageName?.toLowerCase().includes("seller closed")
+      item?.stageName?.toLowerCase().includes("seller closed"),
     );
 
     return (
@@ -315,34 +315,48 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
   function processClienDetails() {
     if (!deals) return null;
 
+    /*
+      customPARealtorRecruitment: person?.customPARealtorRecruitment,
+        customPAActiveRealtor: person?.customPAActiveRealtor,
+         */
+
     return (
       <SummaryCard title="Client Details">
         <FilasSummary label="Language" valor={person?.customClientLanguage} />
         <FilasSummary label="Lead Type" valor={person?.customNEWLeadType} />
         <FilasSummary label="Pipeline" valor={person?.customNEWPIPELINE} />
         <FilasSummary label="Stage" valor={person.stage} />
-        <FilasSummary label="Ready Buy/Sell" valor={person?.customVaClientSignedReadyToBuyOrSell} />
+        <FilasSummary
+          label="Ready Buy/Sell"
+          valor={person?.customVaClientSignedReadyToBuyOrSell}
+        />
 
         {filterPerson?.leadType !== "Seller" && (
-          <FilasSummary label="Legal Status" valor={person?.customNEWClientSQualifyAs} />
-        )}
-
-        {person?.customVAAMPMTimeToCall && person?.customVAAMPM2ndTimeToCall && (
           <FilasSummary
-            label="Best Time To Call"
-            valor={
-              "From " +
-              person?.customVAAMPMTimeToCall?.split("-")[1] +
-              " To " +
-              person?.customVAAMPM2ndTimeToCall?.split("-")[1]
-            }
+            label="Legal Status"
+            valor={person?.customNEWClientSQualifyAs}
           />
         )}
+
+        {person?.customVAAMPMTimeToCall &&
+          person?.customVAAMPM2ndTimeToCall && (
+            <FilasSummary
+              label="Best Time To Call"
+              valor={
+                "From " +
+                person?.customVAAMPMTimeToCall?.split("-")[1] +
+                " To " +
+                person?.customVAAMPM2ndTimeToCall?.split("-")[1]
+              }
+            />
+          )}
 
         <FilasSummary
           label="Best Days To Call"
           valor={person?.customBestDaysToCall?.replaceAll("-", " ")}
         />
+        <FilasSummary label="Realtor Recruitment" valor={person?.customPARealtorRecruitment} />
+        <FilasSummary label="Active Realtor" valor={person?.customPAActiveRealtor} />
       </SummaryCard>
     );
   }
@@ -378,7 +392,8 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
   }
 
   function processTasks() {
-    const hasTaskCall = personFilter?.taskCall && person?.customVANextContactDay3M;
+    const hasTaskCall =
+      personFilter?.taskCall && person?.customVANextContactDay3M;
     const hasThankYouTask =
       personFilter?.taskThankYou && person?.customVAPromiseToCallOrApptReminder;
 
@@ -395,15 +410,16 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
               </span>
 
               <i
-                className={`bi ${btnTaskCall
-                  ? "bi-check-square-fill text-primary"
-                  : "bi-square"
-                  } icon-complete`}
+                className={`bi ${
+                  btnTaskCall
+                    ? "bi-check-square-fill text-primary"
+                    : "bi-square"
+                } icon-complete`}
                 title="Complete"
                 onClick={() =>
                   handleDelete(
                     "customVANextContactDay3M",
-                    personFilter?.taskCall?.id
+                    personFilter?.taskCall?.id,
                   )
                 }
               ></i>
@@ -441,15 +457,16 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
               </span>
 
               <i
-                className={`bi ${btnThankYouCall
-                  ? "bi-check-square-fill text-primary"
-                  : "bi-square"
-                  } icon-complete`}
+                className={`bi ${
+                  btnThankYouCall
+                    ? "bi-check-square-fill text-primary"
+                    : "bi-square"
+                } icon-complete`}
                 title="Complete"
                 onClick={() =>
                   handleDelete(
                     "customVAPromiseToCallOrApptReminder",
-                    personFilter?.taskThankYou?.id
+                    personFilter?.taskThankYou?.id,
                   )
                 }
               ></i>
@@ -463,7 +480,9 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
               label="Due"
               valor={
                 person?.customVAPromiseToCallOrApptReminder
-                  ? ajustarFechaUtcModify(personFilter?.taskThankYou?.dueDateTime)
+                  ? ajustarFechaUtcModify(
+                      personFilter?.taskThankYou?.dueDateTime,
+                    )
                   : ""
               }
             />
@@ -487,9 +506,7 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
     return (
       <SummaryCard title={`DEALS (${deals.length})`}>
         <details>
-          <summary>
-            View Deals ({deals.length})
-          </summary>
+          <summary>View Deals ({deals.length})</summary>
 
           {deals.map((item, index) => (
             <CardDeals key={index} item={item} />
@@ -504,10 +521,7 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
 
     return (
       <SummaryCard title="CLIENT MAIN PROBLEM">
-        <FilasSummary
-          label="Debt Problem"
-          valor={filterPerson.debtProblem}
-        />
+        <FilasSummary label="Debt Problem" valor={filterPerson.debtProblem} />
 
         <div className="problem-tags">
           {filterPerson.problems.map((item, index) => (
@@ -539,7 +553,10 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
     return (
       <SummaryCard title="LAST APPT STATUS">
         <div className="appt-status-grid">
-          <FilasSummary label="Date" valor={ajustarFechaUtcModify(currentAppt?.start)} />
+          <FilasSummary
+            label="Date"
+            valor={ajustarFechaUtcModify(currentAppt?.start)}
+          />
           <FilasSummary label="With" valor={meetingWith} />
           <FilasSummary label="Attendance" valor={currentAppt?.outcome} />
 
@@ -562,14 +579,26 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
           <summary>More appointment details</summary>
 
           <FilasSummary label="Name" valor={currentAppt?.title} />
-          <FilasSummary label="Location" valor={person?.customNEWApptLocation} />
-          <FilasSummary label="Classification" valor={person?.customNEWApptClassification} />
-          <FilasSummary label="Type" valor={currentAppt?.type} />          
+          <FilasSummary
+            label="Location"
+            valor={person?.customNEWApptLocation}
+          />
+          <FilasSummary
+            label="Classification"
+            valor={person?.customNEWApptClassification}
+          />
+          <FilasSummary label="Type" valor={currentAppt?.type} />
 
           {hasMongoStatus && lastCita?.attendance === "Appt NOT Attended" && (
             <>
-              <FilasSummary label="No Show Reason" valor={lastCita?.typeProblems} />
-              <FilasSummary label={lastCita?.typeProblems} valor={lastCita?.problem} />
+              <FilasSummary
+                label="No Show Reason"
+                valor={lastCita?.typeProblems}
+              />
+              <FilasSummary
+                label={lastCita?.typeProblems}
+                valor={lastCita?.problem}
+              />
             </>
           )}
 
@@ -587,10 +616,15 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
             <FilasSummary
               label="Date"
               valor={formatearFecha(
-                new Date(personFilter.whenIsOut?.slice(0, 10) + "T06:00:00" || "")
+                new Date(
+                  personFilter.whenIsOut?.slice(0, 10) + "T06:00:00" || "",
+                ),
               )}
             />
-            <FilasSummary label="Reason" valor={personFilter.whyIsOutReasonSpecific} />
+            <FilasSummary
+              label="Reason"
+              valor={personFilter.whyIsOutReasonSpecific}
+            />
           </div>
         )}
       </SummaryCard>
@@ -609,7 +643,9 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
         >
           <span>Appointment History</span>
           <span>{personFilter?.citas?.length || 0} records</span>
-          <i className={`bi ${showCitas ? "bi-chevron-up" : "bi-chevron-down"}`} />
+          <i
+            className={`bi ${showCitas ? "bi-chevron-up" : "bi-chevron-down"}`}
+          />
         </button>
 
         {showCitas && (
@@ -652,7 +688,8 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
               {person?.firstName} {person?.lastName}
             </h5>
             <div className="executive-summary__meta">
-              {person?.customNEWLeadType} · {person?.customClientLanguage} · {person?.customNEWClientSQualifyAs}
+              {person?.customNEWLeadType} · {person?.customClientLanguage} ·{" "}
+              {person?.customNEWClientSQualifyAs}
             </div>
           </div>
 
@@ -660,9 +697,7 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
             <span className="badge bg-warning text-dark">
               {person?.customNEWPIPELINE}
             </span>
-            <span className="badge bg-primary">
-              {person?.stage}
-            </span>
+            <span className="badge bg-primary">{person?.stage}</span>
           </div>
         </div>
       </SummaryCard>
@@ -682,12 +717,10 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
           {!dataDebt &&
             dataDebsReady &&
             personFilter?.leadType?.toLowerCase().includes("buyer") &&
-            (
-              personFilter?.pipeline === "2- Income or Address Info – No Appt" ||
+            (personFilter?.pipeline === "2- Income or Address Info – No Appt" ||
               personFilter?.pipeline === "3- Waiting for Appointment Day" ||
               personFilter?.pipeline === "4- Appointment Outcome" ||
-              personFilter?.pipeline === "5- VA Follow-Up with Realtor"
-            ) && (
+              personFilter?.pipeline === "5- VA Follow-Up with Realtor") && (
               <div className="compact-alert compact-alert--danger">
                 Use Mortgage Calculator
               </div>
