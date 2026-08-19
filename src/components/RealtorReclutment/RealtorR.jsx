@@ -11,11 +11,12 @@ const RealtorR = () => {
   const [statusBtn, setStatusBtn] = useState(false);
 
   const [formData, setFormData] = useState({
+    customPARealtorRecruitmentPhase: "",
     customPARealtorRecruitment: "",
     customPAActiveRealtor: "",
   });
 
-  const ids = [349, 353];
+  const ids = [349, 353, 355];
 
   //Carga las opciones de los Select desde el Follow Up Boss
   useEffect(() => {
@@ -50,9 +51,10 @@ const RealtorR = () => {
 
   //Carga los datos ya inicializados
   useEffect(() => {
-    console.log(person)
+    console.log(person);
     if (person) {
       const updated = {
+        customPARealtorRecruitmentPhase: person?.customPARealtorRecruitmentPhase,
         customPARealtorRecruitment: person?.customPARealtorRecruitment,
         customPAActiveRealtor: person?.customPAActiveRealtor,
       };
@@ -89,6 +91,7 @@ const RealtorR = () => {
     try {
       const dataJson = {
         personId: context.person.id,
+        customPARealtorRecruitmentPhase: formData.customPARealtorRecruitmentPhase,
         customPARealtorRecruitment: formData.customPARealtorRecruitment,
         customPAActiveRealtor: formData.customPAActiveRealtor,
       };
@@ -135,61 +138,109 @@ const RealtorR = () => {
           )}
         </div>
 
-        {/* Realtor Recruitment */}
+        {/* Realtor Recruitment Phase */}
         <div className="mb-2">
           <label
-            htmlFor="customPARealtorRecruitment"
+            htmlFor="customPARealtorRecruitmentPhase"
             className="form-label small fw-semibold mb-1"
           >
-            {labelById(349) || "Realtor Recruitment"}
+            {labelById(355) || "Realtor Recruitment"}
           </label>
 
           <select
-            id="customPARealtorRecruitment"
+            id="customPARealtorRecruitmentPhase"
             className="form-select form-select-sm"
-            value={formData.customPARealtorRecruitment}
+            value={formData?.customPARealtorRecruitmentPhase || ""}
             onChange={(e) =>
-              handleChange("customPARealtorRecruitment", e.target.value)
+              handleChange("customPARealtorRecruitmentPhase", e.target.value)
             }
             disabled={loading || statusBtn}
+            required
           >
             <option value="">Select...</option>
 
-            {byId(349).map((option, index) => (
+            {byId(355).map((option, index) => (
               <option key={`${option}-${index}`} value={option}>
                 {option}
               </option>
             ))}
           </select>
         </div>
+
+        {/* Realtor Recruitment */}
+        {formData?.customPARealtorRecruitmentPhase && (
+          <div className="mb-2">
+            <label
+              htmlFor="customPARealtorRecruitment"
+              className="form-label small fw-semibold mb-1"
+            >
+              {labelById(349) || "Realtor Recruitment"}
+            </label>
+
+            <select
+              id="customPARealtorRecruitment"
+              className="form-select form-select-sm"
+              value={formData?.customPARealtorRecruitment || ""}
+              onChange={(e) =>
+                handleChange("customPARealtorRecruitment", e.target.value)
+              }
+              disabled={loading || statusBtn}
+              required
+            >
+              <option value="">Select...</option>
+
+              {byId(349).map((option, index) => {
+                if (!formData?.customPARealtorRecruitmentPhase) {
+                  return null;
+                }
+                const numero = formData.customPARealtorRecruitmentPhase
+                  .slice(0, 3)
+                  .replace(/\D/g, "");
+
+                if (option.slice(0, 3).includes(numero)) {
+                  return (
+                    <option key={`${option}-${index}`} value={option}>
+                      {option}
+                    </option>
+                  );
+                }
+
+                return null;
+              })}
+            </select>
+          </div>
+        )}
 
         {/* Active Realtor */}
-        <div className="mb-2">
-          <label
-            htmlFor="customPAActiveRealtor"
-            className="form-label small fw-semibold mb-1"
-          >
-            {labelById(353) || "Active Realtor"}
-          </label>
+        {formData?.customPARealtorRecruitment && (
+          <div className="mb-2">
+            <label
+              htmlFor="customPAActiveRealtor"
+              className="form-label small fw-semibold mb-1"
+            >
+              {labelById(353) || "Active Realtor"}
+            </label>
 
-          <select
-            id="customPAActiveRealtor"
-            className="form-select form-select-sm"
-            value={formData.customPAActiveRealtor}
-            onChange={(e) =>
-              handleChange("customPAActiveRealtor", e.target.value)
-            }
-            disabled={loading || statusBtn}
-          >
-            <option value="">Select...</option>
+            <select
+              id="customPAActiveRealtor"
+              className="form-select form-select-sm"
+              value={formData?.customPAActiveRealtor || ""}
+              onChange={(e) =>
+                handleChange("customPAActiveRealtor", e.target.value)
+              }
+              disabled={loading || statusBtn}
+              required
+            >
+              <option value="">Select...</option>
 
-            {byId(353).map((option, index) => (
-              <option key={`${option}-${index}`} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
+              {byId(353).map((option, index) => (
+                <option key={`${option}-${index}`} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* SAVE */}
         <div className="d-grid">

@@ -355,6 +355,7 @@ export default function Summary({ personFilter, getApptFub, getLastCita }) {
           label="Best Days To Call"
           valor={person?.customBestDaysToCall?.replaceAll("-", " ")}
         />
+        <FilasSummary label="Realtor Recruitment Phase" valor={person?.customPARealtorRecruitmentPhase} />
         <FilasSummary label="Realtor Recruitment" valor={person?.customPARealtorRecruitment} />
         <FilasSummary label="Active Realtor" valor={person?.customPAActiveRealtor} />
       </SummaryCard>
